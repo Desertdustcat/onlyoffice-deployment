@@ -66,7 +66,7 @@ services:
     container_name: onlyoffice-elasticsearch
     environment:
       - discovery.type=single-node
-      - bootstrap.memory_lock=true # maybe fails inside LXC ("memory is not locked") > set to false
+      - bootstrap.memory_lock=false 
       - "ES_JAVA_OPTS=-Xms1g -Xmx1g -Dlog4j2.formatMsgNoLookups=true"
       - "indices.fielddata.cache.size=30%"
       - "indices.memory.index_buffer_size=30%"
@@ -74,9 +74,6 @@ services:
     networks:
       - onlyoffice
     ulimits:
-      memlock:
-        soft: -1
-        hard: -1
       nofile:
         soft: 65535
         hard: 65535
@@ -104,7 +101,7 @@ services:
     depends_on:
       - onlyoffice-document-server
       - onlyoffice-community-server
-    image: onlyoffice/controlpanel:3.5.5
+    image: onlyoffice/controlpanel:3.5.5.549
     environment:
       - ONLYOFFICE_CORE_MACHINEKEY=${ONLYOFFICE_MACHINEKEY}
     volumes:
