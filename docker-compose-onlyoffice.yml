@@ -19,8 +19,8 @@ services:
     networks:
       - onlyoffice
     volumes:
-      - /app/onlyoffice/mysql/conf.d:/etc/mysql/conf.d
-      - /app/onlyoffice/mysql/initdb:/docker-entrypoint-initdb.d
+      - ${APPDATA_PATH}/mysql/conf.d:/etc/mysql/conf.d
+      - ${APPDATA_PATH}/mysql/initdb:/docker-entrypoint-initdb.d
       - mysql_data:/var/lib/mysql
 
   onlyoffice-community-server:
@@ -121,13 +121,12 @@ networks:
     driver: bridge
 
 volumes:
-  document_data:
-  document_log:
-  document_forgotten:
-  community_data:
-  community_log:
-  community_letsencrypt:
-  controlpanel_data:
-  controlpanel_log:
-  mysql_data:
-  es_data:
+  document_data: ${APPDATA_PATH}
+  document_log: ${APPDATA_PATH}
+  document_forgotten: ${APPDATA_PATH}
+  community_data: ${APPDATA_PATH}
+  community_log: ${APPDATA_PATH}
+  controlpanel_data: ${APPDATA_PATH}
+  controlpanel_log: ${APPDATA_PATH}
+  mysql_data: ${APPDATA_PATH}
+  es_data: ${APPDATA_PATH}
