@@ -17,7 +17,7 @@ services:
   onlyoffice-mysql-server:
     <<: *common
     container_name: onlyoffice-mysql-server
-    image: mysql:8.0.29   # TODO: outdated (MySQL 8.0 is EOL), check supported version
+    image: mysql:8.0   # 8.0 is end of life.
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:?set MYSQL_ROOT_PASSWORD in .env}
     networks:
@@ -33,7 +33,7 @@ services:
   onlyoffice-community-server:
     <<: *common
     container_name: onlyoffice-community-server
-    image: onlyoffice/communityserver:12.6.0.1900   # TODO: check current version
+    image: onlyoffice/communityserver:12.8.0.1971   
     depends_on:
       - onlyoffice-mysql-server
       - onlyoffice-document-server
@@ -46,7 +46,6 @@ services:
       - DOCUMENT_SERVER_JWT_ENABLED=true
       - DOCUMENT_SERVER_JWT_SECRET=${ONLYOFFICE_JWT_SECRET:?set ONLYOFFICE_JWT_SECRET in .env}
       - DOCUMENT_SERVER_JWT_HEADER=AuthorizationJwt
-      # Must be the SAME value as the MySQL root password above
       - MYSQL_SERVER_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_SERVER_DB_NAME=onlyoffice
       - MYSQL_SERVER_HOST=onlyoffice-mysql-server
@@ -57,11 +56,9 @@ services:
     networks:
       - onlyoffice
     ports:
-      # One internal HTTP port; Pangolin handles HTTPS in front of it.
+
       - "8085:80"
-      # - "5222:5222"   # XMPP chat – only if you use external chat clients. Never expose publicly.
-    # Required by this image (it runs its own init system inside).
-    # Grants near-root access to the host and may not work in an unprivileged LXC.
+      # - "5222:5222"   # XMPP chat
     privileged: true
     cgroup: host
     volumes:
@@ -70,16 +67,14 @@ services:
       - document_data:/var/www/onlyoffice/DocumentServerData
       - /sys/fs/cgroup:/sys/fs/cgroup:rw
       - ./certs:/var/www/onlyoffice/Data/certs
-      # - community_letsencrypt:/etc/letsencrypt   # not needed when Pangolin does TLS
 
   onlyoffice-elasticsearch:
     <<: *common
-    image: onlyoffice/elasticsearch:7.16.3   # TODO: check current version
+    image: onlyoffice/elasticsearch:7.16.3
     container_name: onlyoffice-elasticsearch
     environment:
       - discovery.type=single-node
-      # Often fails inside an LXC ("memory is not locked") – set to false if ES won't start
-      - bootstrap.memory_lock=true
+      - bootstrap.memory_lock=true # maybe fails inside LXC ("memory is not locked") > set to false
       - "ES_JAVA_OPTS=-Xms1g -Xmx1g -Dlog4j2.formatMsgNoLookups=true"
       - "indices.fielddata.cache.size=30%"
       - "indices.memory.index_buffer_size=30%"
@@ -99,10 +94,10 @@ services:
   onlyoffice-document-server:
     <<: *common
     container_name: onlyoffice-document-server
-    image: onlyoffice/documentserver:8.1   # TODO: outdated, check current version
+    image: onlyoffice/documentserver:10.0
     environment:
       - JWT_ENABLED=true
-      - JWT_SECRET=${ONLYOFFICE_JWT_SECRET}   # must match the community server
+      - JWT_SECRET=${ONLYOFFICE_JWT_SECRET}
       - JWT_HEADER=AuthorizationJwt
     networks:
       - onlyoffice
@@ -112,17 +107,15 @@ services:
       - ./document_fonts:/usr/share/fonts/truetype/custom
       - document_forgotten:/var/lib/onlyoffice/documentserver/App_Data/cache/files/forgotten
 
-  # Optional. Only keep it if you use its GUI (SSL, LDAP, SSO, backups).
-  # The docker.sock mount gives it full control over Docker on this machine.
   onlyoffice-control-panel:
     <<: *common
     container_name: onlyoffice-control-panel
     depends_on:
       - onlyoffice-document-server
       - onlyoffice-community-server
-    image: onlyoffice/controlpanel:3.5.2.530   # TODO: check current version
+    image: onlyoffice/controlpanel:3.5.5
     environment:
-      - ONLYOFFICE_CORE_MACHINEKEY=${ONLYOFFICE_MACHINEKEY}   # must match the community server
+      - ONLYOFFICE_CORE_MACHINEKEY=${ONLYOFFICE_MACHINEKEY}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - controlpanel_data:/var/www/onlyoffice/Data
