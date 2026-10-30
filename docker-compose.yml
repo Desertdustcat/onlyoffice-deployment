@@ -19,9 +19,9 @@ services:
     networks:
       - onlyoffice
     volumes:
-      - ${APPDATA_PATH}/mysql/conf.d:/etc/mysql/conf.d
-      - ${APPDATA_PATH}/mysql/initdb:/docker-entrypoint-initdb.d
-      - mysql_data:/var/lib/mysql
+      - ${APPDATA_PATH:?set APPDATA_PATH in .env}/mysql/conf.d:/etc/mysql/conf.d
+      - ${APPDATA_PATH:?set APPDATA_PATH in .env}/mysql/initdb:/docker-entrypoint-initdb.d
+      - ${APPDATA_PATH:?set APPDATA_PATH in .env}/mysql/data:/var/lib/mysql
 
   onlyoffice-community-server:
     <<: *common
@@ -55,11 +55,10 @@ services:
     privileged: true
     cgroup: host
     volumes:
-      - community_data:/var/www/onlyoffice/Data
-      - community_log:/var/log/onlyoffice
-      - document_data:/var/www/onlyoffice/DocumentServerData
+      - ${APPDATA_PATH:?set APPDATA_PATH in .env}/CommunityServer/data:/var/www/onlyoffice/Data
+      - ${APPDATA_PATH:?set APPDATA_PATH in .env}/CommunityServer/logs:/var/log/onlyoffice
+      - ${APPDATA_PATH:?set APPDATA_PATH in .env}/DocumentServer/data:/var/www/onlyoffice/DocumentServerData
       - /sys/fs/cgroup:/sys/fs/cgroup:rw
-      - ./certs:/var/www/onlyoffice/Data/certs
 
   onlyoffice-elasticsearch:
     <<: *common
@@ -82,7 +81,7 @@ services:
         soft: 65535
         hard: 65535
     volumes:
-      - es_data:/usr/share/elasticsearch/data
+      - ${APPDATA_PATH:?set APPDATA_PATH in .env}/Elasticsearch/data:/usr/share/elasticsearch/data
 
   onlyoffice-document-server:
     <<: *common
@@ -95,10 +94,9 @@ services:
     networks:
       - onlyoffice
     volumes:
-      - document_data:/var/www/onlyoffice/Data
-      - document_log:/var/log/onlyoffice
-      - ./document_fonts:/usr/share/fonts/truetype/custom
-      - document_forgotten:/var/lib/onlyoffice/documentserver/App_Data/cache/files/forgotten
+      - ${APPDATA_PATH:?set APPDATA_PATH in .env}/DocumentServer/data:/var/www/onlyoffice/Data
+      - ${APPDATA_PATH:?set APPDATA_PATH in .env}/DocumentServer/logs:/var/log/onlyoffice
+      - ${APPDATA_PATH:?set APPDATA_PATH in .env}/DocumentServer/fonts:/usr/share/fonts/truetype/custom
 
   onlyoffice-control-panel:
     <<: *common
@@ -111,8 +109,8 @@ services:
       - ONLYOFFICE_CORE_MACHINEKEY=${ONLYOFFICE_MACHINEKEY}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - controlpanel_data:/var/www/onlyoffice/Data
-      - controlpanel_log:/var/log/onlyoffice
+      - ${APPDATA_PATH:?set APPDATA_PATH in .env}/ControlPanel/data:/var/www/onlyoffice/Data
+      - ${APPDATA_PATH:?set APPDATA_PATH in .env}/ControlPanel/logs:/var/log/onlyoffice
     networks:
       - onlyoffice
 
@@ -120,13 +118,3 @@ networks:
   onlyoffice:
     driver: bridge
 
-volumes:
-  document_data: ${APPDATA_PATH}
-  document_log: ${APPDATA_PATH}
-  document_forgotten: ${APPDATA_PATH}
-  community_data: ${APPDATA_PATH}
-  community_log: ${APPDATA_PATH}
-  controlpanel_data: ${APPDATA_PATH}
-  controlpanel_log: ${APPDATA_PATH}
-  mysql_data: ${APPDATA_PATH}
-  es_data: ${APPDATA_PATH}

@@ -21,6 +21,9 @@ mv env.example .env
 ```
 ### 2. Change the Passwords
 Change the Passwords in .env, use `openssl rand -hex 32` to get secure passwords.
+```sh
+nano .env
+```
 - `APPDATA_PATH` – Change data path, default = `app/openoffice`
 - `MYSQL_ROOT_PASSWORD` – Set a password for the SQL root account
 - `ONLYOFFICE_DB_USER` – Optional: change user, best leave default = `onlyoffice_user`
@@ -76,7 +79,8 @@ FLUSH PRIVILEGES;
 ```
 now, as the last thing, set the folders user permissions:
 ```sh
-chmod 644 /app/onlyoffice/mysql/{conf.d/onlyoffice.cnf,/initdb/setup.sql}
+chmod 644 /app/onlyoffice/mysql/conf.d/onlyoffice.cnf
+chmod 644 /app/onlyoffice/mysql/initdb/setup.sql
 ```
 Since setup.sql contains passwords in plain text and is only used once, you can delete it after the first successful start.
 
