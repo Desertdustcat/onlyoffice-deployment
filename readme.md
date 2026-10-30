@@ -1,7 +1,7 @@
 # My ONLYOFFICE-workspace docker Installation
 https://github.com/ONLYOFFICE/Docker-CommunityServer
 
-This is just my personal documentaion of how i installed onlyoffice on a proxmox LXC on my homeserver. All the commands while be as root, so do what that information what you want(maybe add `sudo`, idk). I'm running an alpine LXC with nano, docker compose and docker installed. Changes i've made, away from the offical install:
+This is just my personal documentaion of how i installed onlyoffice on a proxmox LXC on my homeserver. All the commands while be as root, so do what that information what you want(maybe add `sudo`, idk). I'm running an alpine LXC with nano, git, docker compose and docker installed. Changes i've made, away from the offical install:
 - No Mail server
 - moved Passwords to .env
 - newer Versions
