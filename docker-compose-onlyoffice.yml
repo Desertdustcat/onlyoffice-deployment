@@ -1,9 +1,5 @@
-# ONLYOFFICE Workspace – corrected
-# Secrets live in .env (see .env.example). ${VAR:?msg} makes Compose stop
-# with an error if a variable is missing, instead of silently using a default.
-#
-# TODO: update all image tags to the versions in ONLYOFFICE's current
-#       official compose file before deploying.
+# ONLYOFFICE Workspace
+# Secrets live in .env (see .env.example).
 
 x-common: &common
   restart: unless-stopped
@@ -23,11 +19,8 @@ services:
     networks:
       - onlyoffice
     volumes:
-      - ./config/mysql/conf.d:/etc/mysql/conf.d
-      # The init script here creates the ONLYOFFICE database user.
-      # Its username/password MUST match ONLYOFFICE_DB_USER / ONLYOFFICE_DB_PASSWORD.
-      # Init scripts only run once, on an EMPTY mysql_data volume.
-      - ./config/mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+      - /app/onlyoffice/mysql/conf.d:/etc/mysql/conf.d
+      - /app/onlyoffice/mysql/initdb:/docker-entrypoint-initdb.d
       - mysql_data:/var/lib/mysql
 
   onlyoffice-community-server:
