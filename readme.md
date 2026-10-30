@@ -78,3 +78,27 @@ now, as the last thing, set the folders user permissions:
 ```sh
 chmod 644 /app/onlyoffice/mysql/{conf.d/onlyoffice.cnf,/initdb/setup.sql}
 ```
+Since setup.sql contains passwords in plain text and is only used once, you can delete it after the first successful start.
+
+## Initialize MySQL
+> If this is not your first try, delete the old database — the init only runs if no database exists.
+We'll try to start MySQL, and test for errors:
+
+```sh
+docker compose up -d onlyoffice-mysql-server
+docker logs onlyoffice-mysql-server 2>&1 | grep -i 'setup.sql\|error'
+```
+You should see a line like running /docker-entrypoint-initdb.d/setup.sql, and no errors. Then test the login:
+```sh
+docker exec -it onlyoffice-mysql-server mysql -u onlyoffice_user -p -e "SELECT 1"
+```
+If that returns a `1` continueeeee:
+## Start Docker
+Start the rest of the docker compose file. this will maybe take a few minutes:
+```sh
+docker compose up -d
+```
+Now the Docker Installation should be complete and the webinterface for furthe configuration should be on port `8085`. 
+
+idk, if this helps you — if it does, im glad — if it doesnt, i proabably cant help :) 
+
